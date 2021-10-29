@@ -6,43 +6,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./main.css" />
     <script src="script.js" defer></script>
-    <title>Document</title>
+    <title>Star Wars</title>
   </head>
   <body>
-    <div class="character">
-      <h4>Charecter</h4>
-      <ul></ul>
-    </div>
-
-    <p>
-      <button class="backward">◀</button>
-      <span class="page-number"></span><span>/ 8</span>
-      <button class="forward">▶</button>
-    </p>
     <div class="wrapper">
-      <section class="char-info"></section>
-      <div class="svg-div">
-        <svg
-          class="loading-spinner hidden"
-          xmlns="http://www.w3.org/2000/svg"
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-        >
-          <g fill="none">
-            <path
-              id="track"
-              fill="#C6CCD2"
-              d="M24,48 C10.745166,48 0,37.254834 0,24 C0,10.745166 10.745166,0 24,0 C37.254834,0 48,10.745166 48,24 C48,37.254834 37.254834,48 24,48 Z M24,44 C35.045695,44 44,35.045695 44,24 C44,12.954305 35.045695,4 24,4 C12.954305,4 4,12.954305 4,24 C4,35.045695 12.954305,44 24,44 Z"
-            />
-            <path
-              id="section"
-              fill="#3F4850"
-              d="M24,0 C37.254834,0 48,10.745166 48,24 L44,24 C44,12.954305 35.045695,4 24,4 L24,0 Z"
-            />
-          </g>
-        </svg>
-        <section class="planet"></section>
+      <header>
+        <p>Star wars catalog</p>
+      </header>
+      <div class="container">
+        <section class="characters">
+          <p>Characters</p>
+          <ul>
+            <!-- <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li>
+            <li>Luke Skywalker</li> -->
+          </ul>
+          <div>
+            <button>◀</button>
+            <span></span>
+            <span>/</span>
+            <span>9</span>
+            <button>▶</button>
+          </div>
+        </section>
+        <aside>
+          <p>Details</p>
+          <!-- <article>
+            <h5>Luke Skywalker</h5>
+            <p>Height: 172cm</p>
+            <p>Mass: 77kg</p>
+            <p>Hair color: blond</p>
+            <p>Skin color: fair</p>
+            <p>Eye color: blue</p>
+            <p>Birth year:19BBy</p>
+            <p>Gender: male</p>
+          </article> -->
+          <section class="extra-info">
+            <div class="btns">
+              <input
+                type="radio"
+                id="radio-1"
+                name="tabs"
+                data-type="planet"
+                checked
+              />
+              <label for="radio-1" class="tab">Planet</label>
+              <input
+                type="radio"
+                id="radio-2"
+                name="tabs"
+                data-type="species"
+              />
+              <label for="radio-2" class="tab">Species</label>
+              <input
+                type="radio"
+                id="radio-3"
+                name="tabs"
+                data-type="vehicles"
+              />
+              <label for="radio-3" class="tab">Vehicles</label>
+              <input
+                type="radio"
+                id="radio-4"
+                name="tabs"
+                data-type="starships"
+              />
+              <label for="radio-4" class="tab">Starships</label>
+            </div>
+            <!-- <article>
+              <h5>Tattoiin</h5>
+              <p>Rotation period: 23h</p>
+              <p>Orbital period: 304days</p>
+              <p>Diameter: 10465km</p>
+              <p>Climate: Arid</p>
+              <p>Gravity: 1 Standard</p>
+              <p>terrain: Desert</p>
+            </article> -->
+          </section>
+        </aside>
       </div>
     </div>
   </body>
