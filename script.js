@@ -46,6 +46,8 @@ function figureExtraInfoType(type) {
   if (Object.keys(state.selectedCharacter).length === 0) {
     return;
   }
+  removeExtraInfoArticle();
+  extraInfoLoader(true);
   switch (type) {
     case "planet":
       fetchExtraInfo(state.selectedCharacter.homeworld, type);
@@ -63,6 +65,11 @@ function figureExtraInfoType(type) {
 }
 
 function fetchList() {
+  //   ulLoader(true);
+  const items = document.querySelectorAll("li");
+  if (items.length > 0) {
+    items.forEach((item) => item.remove());
+  }
   fetch(`https://swapi.dev/api/people/?page=${state.page}`)
     .then((res) => res.json())
     .then((data) => {
@@ -72,15 +79,18 @@ function fetchList() {
       console.log(state.list);
       renderCharactersList(data.results);
     });
+  //   ulLoader(false);
 }
 
 function fetchExtraInfo(api, type) {
   if (api.length === 0) {
+    renderInfoMissing(type);
     return;
   }
-
+  removeExtraInfoArticle();
+  extraInfoLoader(true);
   console.log(api, type);
-  if (type == undefined || type == CONSTANTS.PLANET) {
+  if (type == CONSTANTS.PLANET) {
     fetch(api)
       .then((res) => res.json())
       .then((data) => renderExraInfo(data, type));
@@ -102,6 +112,24 @@ function fetchExtraInfo(api, type) {
   }
 }
 
+function characterInfoLoader(loading) {
+  const spinner = document.querySelector(".details");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
+function extraInfoLoader(loading) {
+  const spinner = document.querySelector(".extraInfo");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
+function ulLoader(loading) {
+  const spinner = document.querySelector(".ul-loader");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
 //#endregion
 /**
  *
@@ -121,7 +149,6 @@ function PreviousPage() {
     fetchList();
   }
 }
-function extraDetails() {}
 
 //#endregion
 /**
@@ -141,6 +168,7 @@ function renderCharactersList(list) {
   renderPageNumber();
 }
 function renderCharacterDetails(e) {
+  characterInfoLoader(true);
   const preChar = document.querySelector("aside > article");
   if (preChar) {
     preChar.remove();
@@ -169,18 +197,14 @@ function renderCharacterDetails(e) {
             <p>Gender: ${gender}</p>
           </article>
     `;
-
+  characterInfoLoader(false);
   document
     .querySelector(".extra-info")
     .insertAdjacentHTML("beforebegin", characterDetails);
-  fetchExtraInfo(character.homeworld);
+  fetchExtraInfo(character.homeworld, CONSTANTS.PLANET);
 }
 
 function renderExraInfo(data, type) {
-  const extraInfoArticle = document.querySelector(".extra-info  article");
-  if (extraInfoArticle) {
-    extraInfoArticle.remove();
-  }
   const extraInfo =
     type === CONSTANTS.PLANET
       ? planetTemplate(data)
@@ -190,11 +214,27 @@ function renderExraInfo(data, type) {
       ? specieTemplate(data)
       : starshipsTemplate(data);
 
+  extraInfoLoader(false);
   document
     .querySelector(".extra-info")
     .insertAdjacentHTML("beforeend", extraInfo);
 }
+function removeExtraInfoArticle() {
+  const extraInfoArticle = document.querySelector(".extra-info  article");
+  if (extraInfoArticle) {
+    extraInfoArticle.remove();
+  }
+}
 
+function renderInfoMissing(type) {
+  const info = `
+     <article>
+        <h6>Inforamtion abut ${type} are not available.</h6>
+    </article>
+    `;
+  extraInfoLoader(false);
+  document.querySelector(".extra-info").insertAdjacentHTML("beforeend", info);
+}
 function planetTemplate(data) {
   const {
     climate,
@@ -269,7 +309,6 @@ function specieTemplate(data) {
     `;
   return info;
 }
-
 function starshipsTemplate(data) {
   const {
     MGLT,
