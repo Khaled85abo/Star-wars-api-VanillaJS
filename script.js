@@ -43,10 +43,7 @@ function initListItemsEventListeners() {
 
 function fetchList() {
   ulLoader(true);
-  const items = document.querySelectorAll("li");
-  if (items.length > 0) {
-    items.forEach((item) => item.remove());
-  }
+  removeListItems();
   fetch(`https://swapi.dev/api/people/?page=${state.page}`)
     .then((res) => res.json())
     .then((data) => {
@@ -129,25 +126,6 @@ function fetchExtraInfo(type) {
     }
     console.log(starships.length);
   }
-}
-
-function characterInfoLoader(loading) {
-  const spinner = document.querySelector(".details");
-  loading
-    ? spinner.classList.remove("hidden")
-    : spinner.classList.add("hidden");
-}
-function extraInfoLoader(loading) {
-  const spinner = document.querySelector(".extraInfo");
-  loading
-    ? spinner.classList.remove("hidden")
-    : spinner.classList.add("hidden");
-}
-function ulLoader(loading) {
-  const spinner = document.querySelector(".ul-loader");
-  loading
-    ? spinner.classList.remove("hidden")
-    : spinner.classList.add("hidden");
 }
 
 //#endregion
@@ -244,6 +222,13 @@ function removeExtraInfoArticle() {
     for (let article of extraInfoArticle) {
       article.remove();
     }
+  }
+}
+
+function removeListItems() {
+  const items = document.querySelectorAll("li");
+  if (items.length > 0) {
+    items.forEach((item) => item.remove());
   }
 }
 
@@ -368,6 +353,26 @@ function renderPageNumber() {
   state.previous ? (backBtn.disabled = false) : (backBtn.disabled = true);
   state.next ? (forwardBtn.disabled = false) : (forwardBtn.disabled = true);
 }
+
+function characterInfoLoader(loading) {
+  const spinner = document.querySelector(".details");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
+function extraInfoLoader(loading) {
+  const spinner = document.querySelector(".extraInfo");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
+function ulLoader(loading) {
+  const spinner = document.querySelector(".ul-loader");
+  loading
+    ? spinner.classList.remove("hidden")
+    : spinner.classList.add("hidden");
+}
+
 //#endregion
 
 /**
