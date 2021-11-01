@@ -16,29 +16,29 @@
       <div class="container">
         <section class="characters">
           <p>Characters</p>
+          <div class="spinner-div hidden ul-loader">
+            <svg
+              class="loading-spinner"
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+            >
+              <g fill="none">
+                <path
+                  id="track"
+                  fill="#C6CCD2"
+                  d="M24,48 C10.745166,48 0,37.254834 0,24 C0,10.745166 10.745166,0 24,0 C37.254834,0 48,10.745166 48,24 C48,37.254834 37.254834,48 24,48 Z M24,44 C35.045695,44 44,35.045695 44,24 C44,12.954305 35.045695,4 24,4 C12.954305,4 4,12.954305 4,24 C4,35.045695 12.954305,44 24,44 Z"
+                />
+                <path
+                  id="section"
+                  fill="#3F4850"
+                  d="M24,0 C37.254834,0 48,10.745166 48,24 L44,24 C44,12.954305 35.045695,4 24,4 L24,0 Z"
+                />
+              </g>
+            </svg>
+          </div>
           <ul>
-            <div class="spinner-div">
-              <svg
-                class="loading-spinner hidden ul-loader"
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 48 48"
-              >
-                <g fill="none">
-                  <path
-                    id="track"
-                    fill="#C6CCD2"
-                    d="M24,48 C10.745166,48 0,37.254834 0,24 C0,10.745166 10.745166,0 24,0 C37.254834,0 48,10.745166 48,24 C48,37.254834 37.254834,48 24,48 Z M24,44 C35.045695,44 44,35.045695 44,24 C44,12.954305 35.045695,4 24,4 C12.954305,4 4,12.954305 4,24 C4,35.045695 12.954305,44 24,44 Z"
-                  />
-                  <path
-                    id="section"
-                    fill="#3F4850"
-                    d="M24,0 C37.254834,0 48,10.745166 48,24 L44,24 C44,12.954305 35.045695,4 24,4 L24,0 Z"
-                  />
-                </g>
-              </svg>
-            </div>
             <!-- <li>Luke Skywalker</li>
             <li>Luke Skywalker</li>
             <li>Luke Skywalker</li>
@@ -51,18 +51,18 @@
             <li>Luke Skywalker</li> -->
           </ul>
           <div>
-            <button>◀</button>
+            <button class="back-btn">◀</button>
             <span></span>
             <span>/</span>
             <span>9</span>
-            <button>▶</button>
+            <button class="forward-btn">▶</button>
           </div>
         </section>
         <aside>
           <p>Details</p>
-          <div class="spinner-div">
+          <div class="spinner-div hidden details">
             <svg
-              class="loading-spinner hidden details"
+              class="loading-spinner"
               xmlns="http://www.w3.org/2000/svg"
               width="48"
               height="48"
@@ -125,9 +125,9 @@
               <label for="radio-4" class="tab">Starships</label>
             </div>
 
-            <div class="spinner-div">
+            <div class="spinner-div hidden extraInfo">
               <svg
-                class="loading-spinner hidden extraInfo"
+                class="loading-spinner"
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
                 height="48"

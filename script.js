@@ -31,7 +31,7 @@ function initActions() {
   const inputs = document.querySelectorAll("input");
   inputs.forEach((input) =>
     input.addEventListener("click", () =>
-      figureExtraInfoType(input.getAttribute("data-type"))
+      fetchExtraInfo(input.getAttribute("data-type"))
     )
   );
 }
@@ -41,31 +41,8 @@ function initListItemsEventListeners() {
     .forEach((item) => item.addEventListener("click", renderCharacterDetails));
 }
 
-function figureExtraInfoType(type) {
-  console.log("selected character: ", state.selectedCharacter);
-  if (Object.keys(state.selectedCharacter).length === 0) {
-    return;
-  }
-  removeExtraInfoArticle();
-  extraInfoLoader(true);
-  switch (type) {
-    case "planet":
-      fetchExtraInfo(state.selectedCharacter.homeworld, type);
-      break;
-    case "species":
-      fetchExtraInfo(state.selectedCharacter.species, type);
-      break;
-    case "vehicles":
-      fetchExtraInfo(state.selectedCharacter.vehicles, type);
-      break;
-    case "starships":
-      fetchExtraInfo(state.selectedCharacter.starships, type);
-      break;
-  }
-}
-
 function fetchList() {
-  //   ulLoader(true);
+  ulLoader(true);
   const items = document.querySelectorAll("li");
   if (items.length > 0) {
     items.forEach((item) => item.remove());
@@ -76,39 +53,81 @@ function fetchList() {
       state.list = data.results;
       state.previous = data.previous;
       state.next = data.next;
-      console.log(state.list);
       renderCharactersList(data.results);
-    });
-  //   ulLoader(false);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => ulLoader(false));
 }
 
-function fetchExtraInfo(api, type) {
-  if (api.length === 0) {
-    renderInfoMissing(type);
+function fetchExtraInfo(type) {
+  if (Object.keys(state.selectedCharacter).length === 0) {
     return;
   }
+
   removeExtraInfoArticle();
   extraInfoLoader(true);
-  console.log(api, type);
+
   if (type == CONSTANTS.PLANET) {
-    fetch(api)
+    fetch(state.selectedCharacter.homeworld)
       .then((res) => res.json())
-      .then((data) => renderExraInfo(data, type));
+      .then((data) => renderExtraInfo(data, type))
+      .catch((err) => console.log(err));
   }
+
   if (type === CONSTANTS.VEHICLES) {
-    fetch(api[0])
-      .then((res) => res.json())
-      .then((data) => renderExraInfo(data, type));
+    if (state.selectedCharacter.vehicles.length < 1) {
+      renderInfoMissing();
+      return;
+    }
+    let vehicles;
+    for (api of state.selectedCharacter.vehicles) {
+      fetch(api)
+        .then((res) => res.json())
+        .then((data) => {
+          vehicles = data;
+          renderExtraInfo(data);
+        })
+        .catch((err) => console.log(err));
+    }
+    console.log(vehicles);
   }
   if (type === CONSTANTS.SPECIES) {
-    fetch(api[0])
-      .then((res) => res.json())
-      .then((data) => renderExraInfo(data, type));
+    if (state.selectedCharacter.species.length < 1) {
+      renderInfoMissing();
+      return;
+    }
+    let species = [];
+    for (api of state.selectedCharacter.species) {
+      fetch(api)
+        .then((res) => res.json())
+        .then((data) => {
+          renderExtraInfo(data);
+        })
+        .catch((err) => console.log(err));
+    }
+    if (species.length > 0) {
+      renderExtraInfo(species);
+    }
+    console.log(species.length);
   }
   if (type === CONSTANTS.STARSHIPS) {
-    fetch(api[0])
-      .then((res) => res.json())
-      .then((data) => renderExraInfo(data, type));
+    if (state.selectedCharacter.starships.length < 1) {
+      renderInfoMissing();
+      return;
+    }
+    let starships = [];
+    for (api of state.selectedCharacter.starships) {
+      fetch(api)
+        .then((res) => res.json())
+        .then((data) => {
+          renderExtraInfo(data);
+        })
+        .catch((err) => console.log(err));
+    }
+    if (starships.length > 0) {
+      renderExtraInfo(starships);
+    }
+    console.log(starships.length);
   }
 }
 
@@ -130,6 +149,7 @@ function ulLoader(loading) {
     ? spinner.classList.remove("hidden")
     : spinner.classList.add("hidden");
 }
+
 //#endregion
 /**
  *
@@ -138,16 +158,12 @@ function ulLoader(loading) {
  */
 //#region
 function nextPage() {
-  if (state.page < 9) {
-    state.page++;
-    fetchList();
-  }
+  state.page++;
+  fetchList();
 }
 function PreviousPage() {
-  if (state.page > 1) {
-    state.page--;
-    fetchList();
-  }
+  state.page--;
+  fetchList();
 }
 
 //#endregion
@@ -201,10 +217,13 @@ function renderCharacterDetails(e) {
   document
     .querySelector(".extra-info")
     .insertAdjacentHTML("beforebegin", characterDetails);
-  fetchExtraInfo(character.homeworld, CONSTANTS.PLANET);
+  document.querySelector("input:first-of-type").checked = true;
+  fetchExtraInfo(CONSTANTS.PLANET);
 }
 
-function renderExraInfo(data, type) {
+function renderExtraInfo(data, type) {
+  //   removeExtraInfoArticle();
+  console.log(data);
   const extraInfo =
     type === CONSTANTS.PLANET
       ? planetTemplate(data)
@@ -220,9 +239,11 @@ function renderExraInfo(data, type) {
     .insertAdjacentHTML("beforeend", extraInfo);
 }
 function removeExtraInfoArticle() {
-  const extraInfoArticle = document.querySelector(".extra-info  article");
-  if (extraInfoArticle) {
-    extraInfoArticle.remove();
+  const extraInfoArticle = document.querySelectorAll(".extra-info  article");
+  if (extraInfoArticle.length > 0) {
+    for (let article of extraInfoArticle) {
+      article.remove();
+    }
   }
 }
 
@@ -340,6 +361,12 @@ function starshipsTemplate(data) {
 
 function renderPageNumber() {
   document.querySelector(".characters  span").innerText = state.page;
+
+  // Disabel back/forward buttons when there are no more pages to show
+  const backBtn = document.querySelector(".back-btn");
+  const forwardBtn = document.querySelector(".forward-btn");
+  state.previous ? (backBtn.disabled = false) : (backBtn.disabled = true);
+  state.next ? (forwardBtn.disabled = false) : (forwardBtn.disabled = true);
 }
 //#endregion
 
@@ -351,9 +378,9 @@ function renderPageNumber() {
 //#region
 function main() {
   initState();
+  fetchList();
   initActions();
   renderPageNumber();
-  fetchList();
 }
 
 main();
