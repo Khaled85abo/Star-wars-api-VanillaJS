@@ -73,57 +73,57 @@ function fetchExtraInfo(type) {
 
   if (type === CONSTANTS.VEHICLES) {
     if (state.selectedCharacter.vehicles.length < 1) {
-      renderInfoMissing();
+      renderInfoMissing(type);
       return;
     }
+
     let vehicles;
     for (api of state.selectedCharacter.vehicles) {
       fetch(api)
         .then((res) => res.json())
         .then((data) => {
           vehicles = data;
-          renderExtraInfo(data);
+          renderExtraInfo(data, type);
         })
         .catch((err) => console.log(err));
     }
     console.log(vehicles);
   }
+
   if (type === CONSTANTS.SPECIES) {
     if (state.selectedCharacter.species.length < 1) {
-      renderInfoMissing();
+      renderInfoMissing(type);
       return;
     }
-    let species = [];
+    let species;
     for (api of state.selectedCharacter.species) {
       fetch(api)
         .then((res) => res.json())
         .then((data) => {
-          renderExtraInfo(data);
+          renderExtraInfo(data, type);
+          species = data;
         })
         .catch((err) => console.log(err));
     }
-    if (species.length > 0) {
-      renderExtraInfo(species);
-    }
     console.log(species.length);
   }
+
   if (type === CONSTANTS.STARSHIPS) {
     if (state.selectedCharacter.starships.length < 1) {
-      renderInfoMissing();
+      renderInfoMissing(type);
       return;
     }
-    let starships = [];
+    let starships;
     for (api of state.selectedCharacter.starships) {
       fetch(api)
         .then((res) => res.json())
         .then((data) => {
-          renderExtraInfo(data);
+          renderExtraInfo(data, type);
+          starships = data;
         })
         .catch((err) => console.log(err));
     }
-    if (starships.length > 0) {
-      renderExtraInfo(starships);
-    }
+
     console.log(starships.length);
   }
 }
@@ -241,6 +241,7 @@ function renderInfoMissing(type) {
   extraInfoLoader(false);
   document.querySelector(".extra-info").insertAdjacentHTML("beforeend", info);
 }
+
 function planetTemplate(data) {
   const {
     climate,
@@ -305,7 +306,7 @@ function specieTemplate(data) {
     <article>
               <h5>${name}</h5>
               <p>Average height: ${average_height}h</p>
-              <p>Language: ${language}days</p>
+              <p>Language: ${language}</p>
               <p>Classification: ${classification}</p>
               <p>Average lifespan: ${average_lifespan}km</p>
               <p>Skin colors: ${skin_colors}</p>
