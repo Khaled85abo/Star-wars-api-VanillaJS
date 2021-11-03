@@ -158,6 +158,7 @@ function renderCharactersList(list) {
     listItems += `<li>${char.name}</li>`;
   }
   document.querySelector(".characters > ul").innerHTML = listItems;
+
   initListItemsEventListeners();
   renderPageNumber();
 }
