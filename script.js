@@ -18,6 +18,8 @@ function initState() {
     state.next;
     state.selectedCharacter = {};
     state.peoples = {};
+    state.totalPages = 9;
+    state.list = [];
 }
 
 function initActions() {
@@ -373,9 +375,15 @@ function renderPageNumber() {
     //     forwardBtn.disabled = ;
     // }
     state.page == 1 ? (backBtn.disabled = true) : (backBtn.disabled = false);
-    state.page == 9
+    state.page == totalPages
         ? (forwardBtn.disabled = true)
         : (forwardBtn.disabled = false);
+}
+
+function renderTotalPageNumbers() {
+    let charactersPerPage = 6;
+    state.totalPages = Math.ceil(82 / charactersPerPage);
+    document.querySelector(".totalpages").innerText = state.totalPages;
 }
 
 function characterInfoLoader(loading) {
@@ -410,6 +418,7 @@ function main() {
     fetchList();
     initActions();
     renderPageNumber();
+    // renderTotalPageNumbers();
 }
 
 main();
