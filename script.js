@@ -16,7 +16,6 @@ function initState() {
     state.page = 1;
     state.previous;
     state.next;
-    state.list = [];
     state.selectedCharacter = {};
     state.peoples = {};
 }
@@ -43,7 +42,6 @@ function fetchList() {
     fetch(`https://swapi.dev/api/people/?page=${state.page}`)
         .then((res) => res.json())
         .then((data) => {
-            state.list = data.results;
             state.previous = data.previous;
             state.next = data.next;
             const page = state.page;
@@ -104,7 +102,6 @@ function fetchExtraInfo(type) {
                 })
                 .catch((err) => console.log(err));
         }
-        console.log(species.length);
     }
 
     if (type === CONSTANTS.STARSHIPS) {
