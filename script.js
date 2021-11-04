@@ -375,7 +375,7 @@ function renderPageNumber() {
     //     forwardBtn.disabled = ;
     // }
     state.page == 1 ? (backBtn.disabled = true) : (backBtn.disabled = false);
-    state.page == totalPages
+    state.page == 9
         ? (forwardBtn.disabled = true)
         : (forwardBtn.disabled = false);
 }
