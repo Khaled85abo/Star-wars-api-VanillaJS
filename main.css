@@ -19,7 +19,7 @@ body {
 }
 
 .wrapper {
-  max-width: 1100px;
+  max-width: 900px;
   margin: auto;
   background-color: var(--dark-gray);
 }
@@ -27,7 +27,7 @@ header {
   background-image: url(./assets/header-background.png);
   background-repeat: no-repeat;
   background-size: contain;
-  min-height: 40vh;
+  min-height: 30vh;
   display: flex;
   align-items: center;
 }
@@ -47,7 +47,7 @@ header > p {
 .characters > ul > li {
   transition: all 0.5s ease-in-out;
   position: relative;
-  padding: 0.6rem;
+  padding: 0.5rem;
   animation: slide-up 0.4s ease;
 }
 
@@ -117,8 +117,8 @@ header > p {
 
   line-height: 1.5rem;
   letter-spacing: 0.1rem;
-  height: 80%;
-  width: 25rem;
+  height: 60%;
+  width: 20rem;
   background-color: var(--light-gray);
   border-radius: 14px;
 }
@@ -149,7 +149,7 @@ header > p {
   text-align: center;
   color: var(--yellow);
   padding: 1rem 0;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   border-top-left-radius: 14px;
   border-top-right-radius: 14px;
 }
@@ -168,7 +168,7 @@ aside > article {
 }
 
 .container h5 {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
 }
 
 .btns {
@@ -226,7 +226,7 @@ input[type="radio"]:checked + label {
 .svg {
   position: absolute;
   z-index: -1;
-  transition: all ease-in-out 1s;
+  transition: all ease-in-out 0.5s;
 }
 
 .front {
