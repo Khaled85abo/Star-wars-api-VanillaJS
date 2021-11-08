@@ -187,6 +187,7 @@ function renderCharacterDetails(e) {
     (el) => el.name == e.target.innerText
   );
   state.selectedCharacter = character;
+
   const {
     name,
     height,
@@ -201,7 +202,7 @@ function renderCharacterDetails(e) {
      <article>
             <h5>${name}</h5>
             <p>Height: ${height}cm</p>
-            <p>Mass: ${mass}kg</p>
+            <p>Mass: ${mass} kg</p>
             <p>Hair color: ${hair_color}</p>
             <p>Skin color: ${skin_color}</p>
             <p>Eye color: ${eye_color}</p>
@@ -273,9 +274,13 @@ function planetTemplate(data) {
   const info = `
     <article>
               <h5>${name}</h5>
-              <p>Rotation period: ${rotation_period}h</p>
-              <p>Orbital period: ${orbital_period}days</p>
-              <p>Diameter: ${diameter}km</p>
+              <p>Rotation period: ${rotation_period} ${
+    rotation_period != "0" ? " h" : ""
+  }</p>
+              <p>Orbital period: ${orbital_period} ${
+    orbital_period != "0" ? " days" : ""
+  }</p>
+              <p>Diameter: ${diameter} ${diameter != "0" ? " km" : ""}</p>
               <p>Climate: ${climate}</p>
               <p>Gravity: ${gravity}</p>
               <p>terrain: ${terrain}</p>
