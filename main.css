@@ -1,196 +1,219 @@
 @import url("https://fonts.googleapis.com/css2?family=Ropa+Sans&display=swap");
 :root {
-    --yellow: #ffd600;
-    --details-header: #748687;
-    --lighter-gray: #e1dede;
-    --light-gray: #c4c4c4;
-    --gray: #8e8e8e;
-    --dark-gray: #535556;
-    --highlight-gray: #444444;
+  --yellow: #ffd600;
+  --details-header: #748687;
+  --lighter-gray: #e1dede;
+  --light-gray: #c4c4c4;
+  --gray: #8e8e8e;
+  --dark-gray: #535556;
+  --highlight-gray: #444444;
 }
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 body {
-    font-family: "Ropa Sans", sans-serif;
-    background-color: var(--light-gray);
+  font-family: "Ropa Sans", sans-serif;
+  background-color: var(--light-gray);
 }
 
 .wrapper {
-    max-width: 1100px;
-    margin: auto;
-    background-color: var(--dark-gray);
+  max-width: 1100px;
+  margin: auto;
+  background-color: var(--dark-gray);
 }
 header {
-    background-image: url(./assets/header-background.png);
-    background-repeat: no-repeat;
-    background-size: contain;
-    min-height: 40vh;
-    display: flex;
-    align-items: center;
+  background-image: url(./assets/header-background.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
 }
 header > p {
-    text-transform: uppercase;
-    color: var(--yellow);
-    font-size: 2rem;
-    padding-left: 3rem;
-    letter-spacing: 0.9rem;
-    max-width: 40%;
+  text-transform: uppercase;
+  color: var(--yellow);
+  font-size: 2rem;
+  padding-left: 3rem;
+  letter-spacing: 0.9rem;
+  max-width: 40%;
 }
 
 .characters > ul {
-    list-style-type: none;
+  list-style-type: none;
+}
+
+.characters > ul > li {
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  padding: 0.6rem;
+  animation: slide-up 0.4s ease;
+}
+
+@keyframes fase {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .characters > ul > li:nth-child(odd) {
-    background-color: var(--gray);
+  background-color: var(--gray);
 }
 .characters > ul > li:hover {
-    background-color: var(--highlight-gray);
+  background-color: var(--highlight-gray);
+}
+.active {
+  background-color: var(--highlight-gray);
+}
+.active::after {
+  content: "▶";
+  height: 2rem;
+  width: 2rem;
+  color: white;
+  position: absolute;
+  right: 20%;
+  animation: arrow-fade 0.5s ease;
+}
+
+@keyframes arrow-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .characters {
-    padding-bottom: 3rem;
+  padding-bottom: 3rem;
 }
 .characters > div {
-    text-align: center;
+  text-align: center;
 }
 .characters > div:last-child * {
-    margin: 0 0.5rem;
+  margin: 0 0.5rem;
 }
 .characters > div button {
-    font-size: 1.5rem;
-    background-color: transparent;
-    border: none;
+  font-size: 1.5rem;
+  background-color: transparent;
+  border: none;
 }
 .container {
-    display: flex;
-    justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 }
 
 .container section,
 .container aside {
-    font-size: 1rem;
+  font-size: 1rem;
 
-    line-height: 1.5rem;
-    letter-spacing: 0.1rem;
-    height: 80%;
-    width: 25rem;
-    background-color: var(--light-gray);
-    border-radius: 14px;
+  line-height: 1.5rem;
+  letter-spacing: 0.1rem;
+  height: 80%;
+  width: 25rem;
+  background-color: var(--light-gray);
+  border-radius: 14px;
 }
 .container section h5,
 .container aside h5,
 .container section p,
 .container aside p {
-    animation: slide-up 0.4s ease;
+  animation: slide-up 0.4s ease;
 }
 
 @keyframes slide-up {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .container {
-    transform: translateY(-10%);
+  transform: translateY(-10%);
 }
 .container section > p,
 .container aside > p {
-    background-color: var(--details-header);
-    text-align: center;
-    color: var(--yellow);
-    padding: 1rem 0;
-    font-size: 1.5rem;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
+  background-color: var(--details-header);
+  text-align: center;
+  color: var(--yellow);
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 aside > article {
-    margin-bottom: 1rem;
-    border-bottom: var(--light-gray) solid 1px;
+  margin-bottom: 1rem;
+  border-bottom: var(--light-gray) solid 1px;
 }
 
 .container section > p {
-    background-color: var(--dark-gray);
-}
-.characters > ul > li {
-    padding: 0.6rem;
-
-    animation: slide-up 0.4s ease;
-}
-
-@keyframes fase {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  background-color: var(--dark-gray);
 }
 
 .container article {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .container h5 {
-    font-size: 1.6rem;
+  font-size: 1.6rem;
 }
 
 .btns {
-    display: flex;
-    justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 }
 input {
-    display: none;
+  display: none;
 }
 
 label {
-    font-size: 1rem;
-    background-color: var(--lighter-gray);
-    padding: 0.4rem 0.6rem;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--lighter-gray);
+  padding: 0.4rem 0.6rem;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 input[type="radio"]:checked + label {
-    background-color: var(--gray);
-    color: var(--yellow);
+  background-color: var(--gray);
+  color: var(--yellow);
 }
 
 .extra-info > article {
-    background-color: var(--gray);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
+  background-color: var(--gray);
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 .loading-spinner {
-    animation: loading-spinner 1s linear infinite;
+  animation: loading-spinner 1s linear infinite;
 }
 .ul-loader {
-    margin: 15rem 0;
+  margin: 12rem 0;
 }
 .extraInfo {
-    margin: 4rem 0;
+  margin: 4rem 0;
 }
 .spinner-div {
-    text-align: center;
+  text-align: center;
 }
 
 @keyframes loading-spinner {
-    0% {
-        transform: rotate(0deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
 
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .hidden {
-    display: none;
+  display: none;
 }
