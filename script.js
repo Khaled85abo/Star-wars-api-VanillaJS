@@ -405,9 +405,18 @@ function extraInfoLoader(loading) {
 }
 function ulLoader(loading) {
   const spinner = document.querySelector(".ul-loader");
-  loading
-    ? spinner.classList.remove("hidden")
-    : spinner.classList.add("hidden");
+  if (loading) {
+    spinner.classList.remove("hidden");
+    svgLoader(true);
+  } else {
+    spinner.classList.add("hidden");
+    svgLoader(false);
+  }
+}
+
+function svgLoader(loading = false) {
+  const svg = document.querySelector(".svg");
+  loading ? svg.classList.add("front") : svg.classList.remove("front");
 }
 
 function removeListItemArrow() {

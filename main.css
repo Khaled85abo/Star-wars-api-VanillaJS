@@ -222,3 +222,74 @@ input[type="radio"]:checked + label {
 .hidden {
   display: none;
 }
+
+.svg {
+  position: absolute;
+  z-index: -1;
+  transition: all ease-in-out 1s;
+}
+
+.front {
+  z-index: 3;
+}
+.bb8-base {
+  animation: dash 4s infinite alternate cubic-bezier(0.645, 0.045, 0.55, 1);
+}
+@keyframes dash {
+  to {
+    transform: translate(50px) rotate(-20deg); /* starting values 0 translation -40 rotation */
+  }
+}
+
+/* animate the body of bb-8 to rotate
+! the rotation occurs from the center of the body
+*/
+.bb8-center {
+  animation: rotate 0.8s infinite linear;
+}
+@keyframes rotate {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* animate the ground to translate horizontally
+! the translation continuously occurs from side to side
+*/
+.ground {
+  animation: translate 0.8s -0.2s infinite linear;
+}
+@keyframes translate {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* animate the dashes and particles to translate horizontally
+double the duration, but same velocity to show the elements only as the droid leans left 
+*/
+.dash,
+.particle {
+  animation: translateDashesParticles 1.6s infinite linear;
+}
+@keyframes translateDashesParticles {
+  50%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* animate the reflection on the droid's lens */
+.reflection {
+  animation: translateReflection 0.8s infinite linear;
+}
+@keyframes translateReflection {
+  0%,
+  25% {
+    transform: translateX(-20px);
+  }
+  75%,
+  100% {
+    transform: translateX(20px);
+  }
+}
