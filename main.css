@@ -88,7 +88,7 @@ header > p {
   }
 
   100% {
-    transform: translateX(300%) rotateX(360deg);
+    transform: translateX(250%) rotateX(360deg);
     opacity: 0;
   }
 }
