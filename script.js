@@ -374,11 +374,7 @@ function renderPageNumber() {
   // Disabel back/forward buttons when there are no more pages to show
   const backBtn = document.querySelector(".back-btn");
   const forwardBtn = document.querySelector(".forward-btn");
-  // if (state.page == 1) {
-  //     backBtn.disabled = true;
-  // } else if (state.page == 9) {
-  //     forwardBtn.disabled = ;
-  // }
+
   state.page == 1 ? (backBtn.disabled = true) : (backBtn.disabled = false);
   state.page == 9
     ? (forwardBtn.disabled = true)
