@@ -110,11 +110,12 @@ header > p {
   display: flex;
   justify-content: space-around;
 }
-
+.container section {
+  max-height: 32rem;
+}
 .container section,
 .container aside {
   font-size: 1rem;
-
   line-height: 1.5rem;
   letter-spacing: 0.1rem;
   /* height: 20%; */

@@ -55,7 +55,7 @@ function fetchList() {
     .finally(() => ulLoader(false));
 }
 
-function fetchExtraInfo(type) {
+async function fetchExtraInfo(type) {
   if (Object.keys(state.selectedCharacter).length === 0) {
     return;
   }
@@ -64,10 +64,13 @@ function fetchExtraInfo(type) {
   extraInfoLoader(true);
 
   if (type == CONSTANTS.PLANET) {
-    fetch(state.selectedCharacter.homeworld)
-      .then((res) => res.json())
-      .then((data) => renderExtraInfo(data, type))
-      .catch((err) => console.log(err));
+    try {
+      const getData = await fetch(state.selectedCharacter.homeworld);
+      const data = await getData.json();
+      renderExtraInfo(data, type);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   if (type === CONSTANTS.VEHICLES) {
@@ -76,15 +79,17 @@ function fetchExtraInfo(type) {
       return;
     }
 
-    let vehicles;
+    let vehicles = [];
     for (api of state.selectedCharacter.vehicles) {
-      fetch(api)
-        .then((res) => res.json())
-        .then((data) => {
-          vehicles = data;
-          renderExtraInfo(data, type);
-        })
-        .catch((err) => console.log(err));
+      try {
+        const getData = await fetch(api);
+        const data = await getData.json();
+        console.log(data);
+        vehicles.push(data);
+        renderExtraInfo(data, type);
+      } catch (error) {
+        console.log(error);
+      }
     }
     console.log(vehicles);
   }
@@ -96,13 +101,15 @@ function fetchExtraInfo(type) {
     }
     let species;
     for (api of state.selectedCharacter.species) {
-      fetch(api)
-        .then((res) => res.json())
-        .then((data) => {
-          renderExtraInfo(data, type);
-          species = data;
-        })
-        .catch((err) => console.log(err));
+      try {
+        const getData = await fetch(api);
+        const data = await getData.json();
+        console.log(data);
+        species = data;
+        renderExtraInfo(data, type);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
@@ -111,18 +118,19 @@ function fetchExtraInfo(type) {
       renderInfoMissing(type);
       return;
     }
-    let starships;
+    let starships = [];
     for (api of state.selectedCharacter.starships) {
-      fetch(api)
-        .then((res) => res.json())
-        .then((data) => {
-          renderExtraInfo(data, type);
-          starships = data;
-        })
-        .catch((err) => console.log(err));
+      try {
+        const getData = await fetch(api);
+        const data = await getData.json();
+        console.log(data);
+        starships.push(data);
+        renderExtraInfo(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
-    console.log(starships.length);
+    console.log(starships);
   }
 }
 
@@ -313,7 +321,6 @@ function vehicleTemplate(data) {
     `;
   return info;
 }
-
 function specieTemplate(data) {
   const {
     average_height,
