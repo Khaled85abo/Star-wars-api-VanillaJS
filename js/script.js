@@ -105,7 +105,7 @@ async function fetchExtraInfo(type) {
 
   if (type === CONSTANTS.VEHICLES) {
     if (char.vehicles.length < 1) {
-      validateAndRenderMissingInfo(type);
+      renderInfoMissing(type);
       return;
     }
     let vehicles = await loopAndFetch(
@@ -118,7 +118,7 @@ async function fetchExtraInfo(type) {
 
   if (type === CONSTANTS.SPECIES) {
     if (char.species.length < 1) {
-      validateAndRenderMissingInfo(type);
+      renderInfoMissing(type);
       return;
     }
     let species = await loopAndFetch(
@@ -131,7 +131,7 @@ async function fetchExtraInfo(type) {
 
   if (type === CONSTANTS.STARSHIPS) {
     if (char.starships.length < 1) {
-      validateAndRenderMissingInfo(type);
+      renderInfoMissing(type);
       return;
     }
     let starships = await loopAndFetch(
@@ -286,7 +286,7 @@ function renderMultiArticles(arr, type) {
       : ""
   } 
   `;
-  if (arr.length > 1) initMultiArticleActions();
+  arr.length > 1 && initMultiArticleActions();
 }
 function initMultiArticleActions() {
   document
@@ -347,7 +347,7 @@ function renderPageNumber() {
     : (forwardBtn.disabled = false);
 }
 
-function validateAndRenderMissingInfo(type) {
+function renderInfoMissing(type) {
   const info = `
      <article>
         <h6>Inforamtion abut ${type} are not available.</h6>
