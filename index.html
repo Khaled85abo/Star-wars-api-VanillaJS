@@ -454,6 +454,17 @@
         </div>
         <section class="characters">
           <p>Characters</p>
+          <div class="range-input">
+            <input
+              type="range"
+              id="volume"
+              name="volume"
+              min="2"
+              max="10"
+              value="6"
+            />
+            <!-- <label for="volume">Characters per page</label> -->
+          </div>
           <div class="spinner-div hidden ul-loader">
             <svg
               class="loading-spinner"
@@ -476,17 +487,7 @@
               </g>
             </svg>
           </div>
-          <div class="range-input">
-            <input
-              type="range"
-              id="volume"
-              name="volume"
-              min="2"
-              max="10"
-              value="6"
-            />
-            <!-- <label for="volume">Characters per page</label> -->
-          </div>
+
           <ul>
             <!-- <li>Luke Skywalker</li>
             <li>Luke Skywalker</li>
