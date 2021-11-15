@@ -94,16 +94,24 @@ header > p {
   }
 }
 
-.characters > div {
-  text-align: center;
+.characters .page-controller {
+  display: flex;
+  justify-content: center;
 }
-.characters > div:last-child * {
+.characters .page-controller * {
   margin: 0 0.5rem;
 }
 .characters > div button {
   font-size: 1.5rem;
   background-color: transparent;
   border: none;
+}
+
+.characters .range-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: gray;
 }
 .container {
   display: flex;
@@ -173,18 +181,18 @@ aside > article {
   display: flex;
   justify-content: space-around;
 }
-input {
+.btns input {
   display: none;
 }
 
-label {
+.btns label {
   font-size: 1rem;
   background-color: var(--lighter-gray);
   padding: 0.4rem 0.6rem;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
-input[type="radio"]:checked + label {
+.btns input[type="radio"]:checked + label {
   background-color: var(--gray);
   color: var(--yellow);
 }

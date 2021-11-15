@@ -1,7 +1,9 @@
 const baseUrl = "https://swapi.dev/api/";
 
-export const fetchPeople = (page) => {
-  return fetch(`${baseUrl}people/?page=${page}`);
+export const fetchPeople = async (page) => {
+  const getData = await fetch(`${baseUrl}people/?page=${page}`);
+  const data = await getData.json();
+  return data;
 };
 export const fetchPlanet = async (planet) => {
   const getData = await fetch(`${baseUrl}planets/${planet}`);

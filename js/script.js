@@ -30,31 +30,35 @@ const CONSTANTS = {
   STARSHIPS: "starships",
 };
 function initState() {
-  state.page = 1;
-  state.previous;
-  state.next;
+  state.charsPerPage = 6;
+  state.totalChars;
+  state.startIndex = 0;
+  state.endIndex = state.charsPerPage;
   state.starships = {};
   state.planets = {};
   state.species = {};
   state.vehicles = {};
   state.selectedCharacter = {};
-  state.peoples = {};
-  state.totalPages = 9;
   state.currentArticle = 1;
   state.articlesArray;
   state.articleType;
   state.list = [];
+  state.pagesArray = [];
+  state.pagesArrayIndex = 0;
 }
 
 function initActions() {
   document
     .querySelector(".characters > div > button:first-child")
-    .addEventListener("click", PreviousPage);
+    .addEventListener("click", previousPage);
   document
     .querySelector(".characters > div > button:last-child")
     .addEventListener("click", nextPage);
 
-  const inputs = document.querySelectorAll("input");
+  document
+    .querySelector(".range-input > input")
+    .addEventListener("input", changeCharsPerPage);
+  const inputs = document.querySelectorAll("input[data-type]");
   inputs.forEach((input) =>
     input.addEventListener("click", () =>
       fetchExtraInfo(input.getAttribute("data-type"))
@@ -62,21 +66,47 @@ function initActions() {
   );
 }
 
-function fetchList() {
-  ulLoader(true);
-  removeListItems();
-  api
-    .fetchPeople(state.page)
-    .then((res) => res.json())
-    .then((data) => {
-      state.previous = data.previous;
-      state.next = data.next;
-      const page = state.page;
-      state.peoples[page] = data.results;
-      renderCharactersList(data.results);
-    })
-    .catch((err) => console.log(err))
-    .finally(() => ulLoader(false));
+function createPagesArray() {
+  state.pagesArray = [];
+  for (let i = 0; i < Math.ceil(state.list.length / state.charsPerPage); i++) {
+    createPage();
+  }
+
+  console.log("pages array: ", state.pagesArray);
+}
+
+function createPage() {
+  const page = [];
+  for (let i = state.startIndex; i < state.endIndex; i++) {
+    if (state.list[i]) {
+      page.push(state.list[i]);
+    }
+  }
+  state.pagesArray.push(page);
+  state.startIndex = state.endIndex;
+  state.endIndex = state.startIndex + state.charsPerPage;
+}
+
+async function fetchAllChars(page = 1) {
+  if (page == 1) ulLoader(true);
+  try {
+    const data = await api.fetchPeople(page);
+    state.list = [...state.list, ...data.results];
+    if (page == 1) {
+      state.totalChars = data.count;
+    }
+    if (data.next) {
+      page++;
+      fetchAllChars(page);
+    } else {
+      createPagesArray();
+      renderCharactersList();
+      renderTotalPageNumbers();
+      ulLoader(false);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function fetchExtraInfo(type) {
@@ -85,7 +115,6 @@ async function fetchExtraInfo(type) {
   if (Object.keys(char).length === 0) {
     return;
   }
-  removeExtraInfoArticle();
   extraInfoLoader(true);
 
   if (type == CONSTANTS.PLANET) {
@@ -170,26 +199,49 @@ async function loopAndFetch(urls, stateObject, apiFetch) {
  */
 //#region
 function nextPage() {
-  state.page++;
-  if (state.peoples[state.page]) {
-    renderCharactersList(state.peoples[state.page]);
-  } else {
-    fetchList();
-  }
+  state.pagesArrayIndex++;
+  renderCharactersList();
 }
-function PreviousPage() {
-  state.page--;
-  if (state.peoples[state.page]) {
-    renderCharactersList(state.peoples[state.page]);
-  } else {
-    fetchList();
-  }
+function previousPage() {
+  state.pagesArrayIndex--;
+  renderCharactersList();
 }
-
+function nextArticle() {
+  if (state.currentArticle == state.articlesArray.length) {
+    state.currentArticle = 1;
+  } else {
+    state.currentArticle++;
+  }
+  renderMultiArticles(state.articlesArray, state.articleType);
+}
+function previousArticle() {
+  if (state.currentArticle == 1) {
+    state.currentArticle = state.articlesArray.length;
+  } else {
+    state.currentArticle--;
+  }
+  renderMultiArticles(state.articlesArray, state.articleType);
+}
+function changeCharsPerPage(e) {
+  state.charsPerPage = Number(e.target.value);
+  state.startIndex = 0;
+  state.endIndex = state.charsPerPage;
+  createPagesArray();
+  renderCharactersList();
+  renderTotalPageNumbers();
+}
 function initListItemsEventListeners() {
   document
     .querySelectorAll("li")
     .forEach((item) => item.addEventListener("click", renderCharacterDetails));
+}
+function initMultiArticleActions() {
+  document
+    .querySelector(".multi-back-btn")
+    .addEventListener("click", previousArticle);
+  document
+    .querySelector(".multi-forward-btn")
+    .addEventListener("click", nextArticle);
 }
 
 //#endregion
@@ -200,13 +252,15 @@ function initListItemsEventListeners() {
  */
 //#region
 
-function renderCharactersList(list) {
+function renderCharactersList() {
+  const page = state.pagesArray[state.pagesArrayIndex];
   let listItems = "";
-  for (let char of list) {
-    listItems += `<li>${char.name}</li>`;
+  if (page) {
+    for (let el of page) {
+      listItems += `<li>${el.name}</li>`;
+    }
   }
   document.querySelector(".characters > ul").innerHTML = listItems;
-
   initListItemsEventListeners();
   renderPageNumber();
 }
@@ -216,13 +270,7 @@ function renderCharacterDetails(e) {
   removeListItemArrow();
   e.target.classList.add("active");
   characterInfoLoader(true);
-  const preChar = document.querySelector("aside > article");
-  if (preChar) {
-    preChar.remove();
-  }
-  const character = state.peoples[state.page].find(
-    (el) => el.name == e.target.innerText
-  );
+  const character = state.list.find((el) => el.name == e.target.innerText);
   state.selectedCharacter = character;
 
   const {
@@ -248,16 +296,12 @@ function renderCharacterDetails(e) {
           </article>
     `;
   characterInfoLoader(false);
-  document
-    .querySelector(".extra-info")
-    .insertAdjacentHTML("beforebegin", characterDetails);
-  document.querySelector("input:first-of-type").checked = true;
+  document.querySelector(".character-details").innerHTML = characterDetails;
+  document.querySelector(".btns > input[data-type='planet']").checked = true;
   fetchExtraInfo(CONSTANTS.PLANET);
 }
 
 function renderMultiArticles(arr, type) {
-  console.log(arr, type, state.currentArticle);
-
   state.articlesArray = arr;
   state.articleType = type;
   if (state.currentArticle > state.articlesArray.length) {
@@ -288,63 +332,32 @@ function renderMultiArticles(arr, type) {
   `;
   arr.length > 1 && initMultiArticleActions();
 }
-function initMultiArticleActions() {
-  document
-    .querySelector(".multi-back-btn")
-    .addEventListener("click", multiBackBtnCLicked);
-  document
-    .querySelector(".multi-forward-btn")
-    .addEventListener("click", multiForwardBtnCLicked);
-}
-function multiBackBtnCLicked() {
-  if (state.currentArticle == 1) {
-    state.currentArticle = state.articlesArray.length;
-  } else {
-    state.currentArticle--;
-  }
-  renderMultiArticles(state.articlesArray, state.articleType);
-}
-function multiForwardBtnCLicked() {
-  if (state.currentArticle == state.articlesArray.length) {
-    state.currentArticle = 1;
-  } else {
-    state.currentArticle++;
-  }
-  renderMultiArticles(state.articlesArray, state.articleType);
-}
-
 function renderPlanet(data) {
   extraInfoLoader(false);
   document.querySelector(".article").innerHTML = planetTemplate(data);
 }
 
-function removeExtraInfoArticle() {
-  const extraInfoArticle = document.querySelectorAll(".extra-info  article");
-  if (extraInfoArticle.length > 0) {
-    for (let article of extraInfoArticle) {
-      article.remove();
-    }
-  }
-}
-
-function removeListItems() {
-  const items = document.querySelectorAll("li");
-  if (items.length > 0) {
-    items.forEach((item) => item.remove());
-  }
-}
-
 function renderPageNumber() {
-  document.querySelector(".characters  span").innerText = state.page;
-
+  document.querySelector(".characters  span").innerText =
+    state.pagesArrayIndex + 1;
+  // const firstLi = document.querySelector("li").innerText;
+  // const indexOfLi = state.list.findIndex((el) => el.name == firstLi);
   // Disabel back/forward buttons when there are no more pages to show
   const backBtn = document.querySelector(".back-btn");
   const forwardBtn = document.querySelector(".forward-btn");
 
-  state.page == 1 ? (backBtn.disabled = true) : (backBtn.disabled = false);
-  state.page == 9
+  state.pagesArrayIndex == 0
+    ? (backBtn.disabled = true)
+    : (backBtn.disabled = false);
+  state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage)
     ? (forwardBtn.disabled = true)
     : (forwardBtn.disabled = false);
+}
+
+function renderTotalPageNumbers() {
+  document.querySelector(".totalpages").innerHTML = Math.ceil(
+    state.totalChars / state.charsPerPage
+  );
 }
 
 function renderInfoMissing(type) {
@@ -401,10 +414,8 @@ function removeListItemArrow() {
 //#region
 function main() {
   initState();
-  fetchList();
+  fetchAllChars();
   initActions();
-  renderPageNumber();
-  // renderTotalPageNumbers();
 }
 
 main();

@@ -476,6 +476,17 @@
               </g>
             </svg>
           </div>
+          <div class="range-input">
+            <input
+              type="range"
+              id="volume"
+              name="volume"
+              min="2"
+              max="10"
+              value="6"
+            />
+            <!-- <label for="volume">Characters per page</label> -->
+          </div>
           <ul>
             <!-- <li>Luke Skywalker</li>
             <li>Luke Skywalker</li>
@@ -488,11 +499,11 @@
             <li>Luke Skywalker</li>
             <li>Luke Skywalker</li> -->
           </ul>
-          <div>
+          <div class="page-controller">
             <button class="back-btn">◀</button>
             <span></span>
             <span>/</span>
-            <span class="totalpages">9</span>
+            <span class="totalpages"></span>
             <button class="forward-btn">▶</button>
           </div>
         </section>
@@ -520,6 +531,7 @@
               </g>
             </svg>
           </div>
+          <div class="character-details"></div>
           <!-- <article>
             <h5>Luke Skywalker</h5>
             <p>Height: 172cm</p>
