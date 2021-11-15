@@ -1,5 +1,22 @@
 /**
  *
+ * Imports
+ *
+ */
+//#region
+import {
+  planetTemplate,
+  vehicleTemplate,
+  starshipsTemplate,
+  specieTemplate,
+} from "./templates.js";
+
+import * as api from "./api/index.js";
+import { getNumber } from "./functions.js";
+//#endregion
+
+/**
+ *
  * Model Logic
  *
  */
@@ -16,9 +33,16 @@ function initState() {
   state.page = 1;
   state.previous;
   state.next;
+  state.starships = {};
+  state.planets = {};
+  state.species = {};
+  state.vehicles = {};
   state.selectedCharacter = {};
   state.peoples = {};
   state.totalPages = 9;
+  state.currentArticle = 1;
+  state.articlesArray;
+  state.articleType;
   state.list = [];
 }
 
@@ -41,14 +65,14 @@ function initActions() {
 function fetchList() {
   ulLoader(true);
   removeListItems();
-  fetch(`https://swapi.dev/api/people/?page=${state.page}`)
+  api
+    .fetchPeople(state.page)
     .then((res) => res.json())
     .then((data) => {
       state.previous = data.previous;
       state.next = data.next;
       const page = state.page;
       state.peoples[page] = data.results;
-      console.log(state.peoples);
       renderCharactersList(data.results);
     })
     .catch((err) => console.log(err))
@@ -56,82 +80,86 @@ function fetchList() {
 }
 
 async function fetchExtraInfo(type) {
-  if (Object.keys(state.selectedCharacter).length === 0) {
+  const char = state.selectedCharacter;
+
+  if (Object.keys(char).length === 0) {
     return;
   }
-
   removeExtraInfoArticle();
   extraInfoLoader(true);
 
   if (type == CONSTANTS.PLANET) {
-    try {
-      const getData = await fetch(state.selectedCharacter.homeworld);
-      const data = await getData.json();
-      renderExtraInfo(data, type);
-    } catch (error) {
-      console.log(error);
+    const num = getNumber(char.homeworld);
+    if (num in state.planets) {
+      renderPlanet(state.planets[num]);
+    } else {
+      try {
+        const data = await api.fetchPlanet(num);
+        state.planets[num] = data;
+        renderPlanet(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
   if (type === CONSTANTS.VEHICLES) {
-    if (state.selectedCharacter.vehicles.length < 1) {
-      renderInfoMissing(type);
+    if (char.vehicles.length < 1) {
+      validateAndRenderMissingInfo(type);
       return;
     }
-
-    let vehicles = [];
-    for (api of state.selectedCharacter.vehicles) {
-      try {
-        const getData = await fetch(api);
-        const data = await getData.json();
-        console.log(data);
-        vehicles.push(data);
-        renderExtraInfo(data, type);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    console.log(vehicles);
+    let vehicles = await loopAndFetch(
+      char.vehicles,
+      state.vehicles,
+      api.fetchVehicles
+    );
+    renderMultiArticles(vehicles, type);
   }
 
   if (type === CONSTANTS.SPECIES) {
-    if (state.selectedCharacter.species.length < 1) {
-      renderInfoMissing(type);
+    if (char.species.length < 1) {
+      validateAndRenderMissingInfo(type);
       return;
     }
-    let species;
-    for (api of state.selectedCharacter.species) {
-      try {
-        const getData = await fetch(api);
-        const data = await getData.json();
-        console.log(data);
-        species = data;
-        renderExtraInfo(data, type);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    let species = await loopAndFetch(
+      char.species,
+      state.species,
+      api.fetchSpecies
+    );
+    renderMultiArticles(species, type);
   }
 
   if (type === CONSTANTS.STARSHIPS) {
-    if (state.selectedCharacter.starships.length < 1) {
-      renderInfoMissing(type);
+    if (char.starships.length < 1) {
+      validateAndRenderMissingInfo(type);
       return;
     }
-    let starships = [];
-    for (api of state.selectedCharacter.starships) {
+    let starships = await loopAndFetch(
+      char.starships,
+      state.starships,
+      api.fetchStarships
+    );
+    renderMultiArticles(starships, type);
+  }
+}
+
+async function loopAndFetch(urls, stateObject, apiFetch) {
+  const array = [];
+  for (let url of urls) {
+    const num = getNumber(url);
+    if (num in stateObject) {
+      array.push(stateObject[num]);
+    } else {
       try {
-        const getData = await fetch(api);
-        const data = await getData.json();
-        console.log(data);
-        starships.push(data);
-        renderExtraInfo(data);
+        const data = await apiFetch(num);
+        array.push(data);
+        stateObject[num] = data;
       } catch (error) {
         console.log(error);
       }
     }
-    console.log(starships);
   }
+  return array;
 }
 
 //#endregion
@@ -184,6 +212,7 @@ function renderCharactersList(list) {
 }
 
 function renderCharacterDetails(e) {
+  document.querySelector("aside").classList.remove("hidden");
   removeListItemArrow();
   e.target.classList.add("active");
   characterInfoLoader(true);
@@ -226,23 +255,69 @@ function renderCharacterDetails(e) {
   fetchExtraInfo(CONSTANTS.PLANET);
 }
 
-function renderExtraInfo(data, type) {
-  //   removeExtraInfoArticle();
-  console.log(data);
-  const extraInfo =
-    type === CONSTANTS.PLANET
-      ? planetTemplate(data)
-      : type === CONSTANTS.VEHICLES
-      ? vehicleTemplate(data)
-      : type === CONSTANTS.SPECIES
-      ? specieTemplate(data)
-      : starshipsTemplate(data);
+function renderMultiArticles(arr, type) {
+  console.log(arr, type, state.currentArticle);
 
+  state.articlesArray = arr;
+  state.articleType = type;
+  if (state.currentArticle > state.articlesArray.length) {
+    state.currentArticle = 1;
+  }
+  const extraInfo =
+    type === CONSTANTS.VEHICLES
+      ? vehicleTemplate(arr[state.currentArticle - 1])
+      : type === CONSTANTS.SPECIES
+      ? specieTemplate(arr[state.currentArticle - 1])
+      : starshipsTemplate(arr[state.currentArticle - 1]);
   extraInfoLoader(false);
-  document
-    .querySelector(".extra-info")
-    .insertAdjacentHTML("beforeend", extraInfo);
+  document.querySelector(".article").innerHTML = `
+  ${extraInfo}
+  ${
+    arr.length > 1
+      ? `
+      <div class="multi-div">
+        <button class="multi-back-btn">◀</button>
+        <span>${state.currentArticle}</span>
+        <span>/</span>
+        <span class="totalpages">${arr.length}</span>
+        <button class="multi-forward-btn">▶</button>
+      </div>
+    `
+      : ""
+  } 
+  `;
+  if (arr.length > 1) initMultiArticleActions();
 }
+function initMultiArticleActions() {
+  document
+    .querySelector(".multi-back-btn")
+    .addEventListener("click", multiBackBtnCLicked);
+  document
+    .querySelector(".multi-forward-btn")
+    .addEventListener("click", multiForwardBtnCLicked);
+}
+function multiBackBtnCLicked() {
+  if (state.currentArticle == 1) {
+    state.currentArticle = state.articlesArray.length;
+  } else {
+    state.currentArticle--;
+  }
+  renderMultiArticles(state.articlesArray, state.articleType);
+}
+function multiForwardBtnCLicked() {
+  if (state.currentArticle == state.articlesArray.length) {
+    state.currentArticle = 1;
+  } else {
+    state.currentArticle++;
+  }
+  renderMultiArticles(state.articlesArray, state.articleType);
+}
+
+function renderPlanet(data) {
+  extraInfoLoader(false);
+  document.querySelector(".article").innerHTML = planetTemplate(data);
+}
+
 function removeExtraInfoArticle() {
   const extraInfoArticle = document.querySelectorAll(".extra-info  article");
   if (extraInfoArticle.length > 0) {
@@ -259,122 +334,6 @@ function removeListItems() {
   }
 }
 
-function renderInfoMissing(type) {
-  const info = `
-     <article>
-        <h6>Inforamtion abut ${type} are not available.</h6>
-    </article>
-    `;
-  extraInfoLoader(false);
-  document.querySelector(".extra-info").insertAdjacentHTML("beforeend", info);
-}
-
-function planetTemplate(data) {
-  const {
-    climate,
-    diameter,
-    gravity,
-    orbital_period,
-    rotation_period,
-    terrain,
-    name,
-  } = data;
-  const info = `
-    <article>
-              <h5>${name}</h5>
-              <p>Rotation period: ${rotation_period} ${
-    rotation_period != "0" ? " h" : ""
-  }</p>
-              <p>Orbital period: ${orbital_period} ${
-    orbital_period != "0" ? " days" : ""
-  }</p>
-              <p>Diameter: ${diameter} ${diameter != "0" ? " km" : ""}</p>
-              <p>Climate: ${climate}</p>
-              <p>Gravity: ${gravity}</p>
-              <p>terrain: ${terrain}</p>
-            </article>
-    `;
-  return info;
-}
-function vehicleTemplate(data) {
-  const {
-    cargo_capacity,
-    consumables,
-    crew,
-    length,
-    manufacturer,
-    max_atmosphering_speed,
-    name,
-    model,
-    passengers,
-  } = data;
-  const info = `
-    <article>
-              <h5>${name}</h5>
-              <p>Length: ${length}h</p>
-              <p>Manufacturer: ${manufacturer}days</p>
-              <p>model: ${model}</p>
-              <p>Max atmospheric speed: ${max_atmosphering_speed}km</p>
-              <p>Crew: ${crew}</p>
-              <p>Passengers: ${passengers}</p>
-            </article>
-    `;
-  return info;
-}
-function specieTemplate(data) {
-  const {
-    average_height,
-    average_lifespan,
-    classification,
-    eye_colors,
-    hair_colors,
-    language,
-    skin_colors,
-    name,
-  } = data;
-  const info = `
-    <article>
-              <h5>${name}</h5>
-              <p>Average height: ${average_height}h</p>
-              <p>Language: ${language}</p>
-              <p>Classification: ${classification}</p>
-              <p>Average lifespan: ${average_lifespan}km</p>
-              <p>Skin colors: ${skin_colors}</p>
-              <p>Hair colors: ${hair_colors}</p>
-              <p>Eye colors: ${eye_colors}</p>
-            </article>
-    `;
-  return info;
-}
-function starshipsTemplate(data) {
-  const {
-    MGLT,
-    cargo_capacity,
-    consumables,
-    crew,
-    length,
-    manufacturer,
-    max_atmosphering_speed,
-    model,
-    passengers,
-    starship_class,
-    name,
-  } = data;
-  const info = `
-    <article>
-              <h5>${name}</h5>
-              <p>Starship class: ${starship_class}h</p>
-              <p>Langth: ${length}days</p>
-              <p>Manufacturer: ${manufacturer}</p>
-              <p>Model: ${model}km</p>
-              <p>Passengers: ${passengers}</p>
-              <p>Crew: ${crew}</p>
-              <p>Consumable: ${consumables}</p>
-            </article>
-    `;
-  return info;
-}
-
 function renderPageNumber() {
   document.querySelector(".characters  span").innerText = state.page;
 
@@ -388,10 +347,14 @@ function renderPageNumber() {
     : (forwardBtn.disabled = false);
 }
 
-function renderTotalPageNumbers() {
-  let charactersPerPage = 6;
-  state.totalPages = Math.ceil(82 / charactersPerPage);
-  document.querySelector(".totalpages").innerText = state.totalPages;
+function validateAndRenderMissingInfo(type) {
+  const info = `
+     <article>
+        <h6>Inforamtion abut ${type} are not available.</h6>
+    </article>
+    `;
+  extraInfoLoader(false);
+  document.querySelector(".article").innerHTML = info;
 }
 
 function characterInfoLoader(loading) {
