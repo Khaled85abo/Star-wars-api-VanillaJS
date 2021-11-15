@@ -42,6 +42,7 @@ header > p {
 
 .characters > ul {
   list-style-type: none;
+  margin-bottom: 1rem;
 }
 
 .characters > ul > li {
@@ -92,9 +93,7 @@ header > p {
     opacity: 0;
   }
 }
-.characters {
-  padding-bottom: 3rem;
-}
+
 .characters > div {
   text-align: center;
 }
@@ -110,9 +109,7 @@ header > p {
   display: flex;
   justify-content: space-around;
 }
-.container section {
-  max-height: 32rem;
-}
+
 .container section,
 .container aside {
   font-size: 1rem;
@@ -198,36 +195,11 @@ input[type="radio"]:checked + label {
   border-bottom-right-radius: 14px;
 }
 
-/* .slider {
-  overflow: hidden;
-}
-
-.ankor-tags {
-  text-align: center;
-}
-.ankor-tags > a {
-  background-color: var(--light-gray);
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
-  padding: 0.2rem 0.5rem;
-  margin-top: 2rem;
-  text-decoration: none;
-}
-.slides {
-  display: flex;
-  overflow-x: auto;
-  margin-right: 20px;
-  scroll-behavior: smooth;
-}
-.slides article {
-  min-width: 300px;
-} */
 .loading-spinner {
   animation: loading-spinner 1s linear infinite;
 }
 .ul-loader {
-  margin: 12rem 0;
+  margin: 11.4rem 0;
 }
 .extraInfo {
   margin: 4rem 0;
