@@ -25,3 +25,9 @@ export const fetchStarships = async (starship) => {
   const data = await getData.json();
   return data;
 };
+
+export const allFetch = async (extension, num) => {
+  const getData = await fetch(`${baseUrl}${extension}/${num}`);
+  const data = await getData.json();
+  return data;
+};

@@ -29,6 +29,8 @@ const CONSTANTS = {
   SPECIES: "species",
   STARSHIPS: "starships",
 };
+// page, pageSize to avoid pagesArray
+
 function initState() {
   state.charsPerPage = 6;
   state.totalChars;
@@ -346,12 +348,16 @@ function renderPageNumber() {
   const backBtn = document.querySelector(".back-btn");
   const forwardBtn = document.querySelector(".forward-btn");
 
-  state.pagesArrayIndex == 0
-    ? (backBtn.disabled = true)
-    : (backBtn.disabled = false);
-  state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage)
-    ? (forwardBtn.disabled = true)
-    : (forwardBtn.disabled = false);
+  backBtn.disabled = state.pagesArrayIndex == 0;
+  forwardBtn.disabled =
+    state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage);
+
+  // state.pagesArrayIndex == 0
+  //   ? (backBtn.disabled = true)
+  //   : (backBtn.disabled = false);
+  // state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage)
+  //   ? (forwardBtn.disabled = true)
+  //   : (forwardBtn.disabled = false);
 }
 
 function renderTotalPageNumbers() {
