@@ -9,10 +9,29 @@ import {
   vehicleTemplate,
   starshipsTemplate,
   specieTemplate,
+  characterTemplate,
 } from "./templates.js";
 
 import * as api from "./api/index.js";
 import { getNumber } from "./functions.js";
+//#endregion
+
+/**
+ *
+ * ENTRY POINT
+ *
+ */
+//#region
+const state = {};
+
+function main() {
+  initState();
+  initActions();
+  fetchAllChars();
+}
+
+main();
+
 //#endregion
 
 /**
@@ -22,20 +41,20 @@ import { getNumber } from "./functions.js";
  */
 //#region
 
-const state = {};
 const CONSTANTS = {
   PLANET: "planet",
   VEHICLES: "vehicles",
   SPECIES: "species",
   STARSHIPS: "starships",
 };
-// page, pageSize to avoid pagesArray
 
 function initState() {
+  // characters list managment
+  state.page = 1;
   state.charsPerPage = 6;
-  state.totalChars;
-  state.startIndex = 0;
-  state.endIndex = state.charsPerPage;
+  state.charsCount;
+  state.totalPages;
+  // info section managment
   state.starships = {};
   state.planets = {};
   state.species = {};
@@ -45,8 +64,6 @@ function initState() {
   state.articlesArray;
   state.articleType;
   state.list = [];
-  state.pagesArray = [];
-  state.pagesArrayIndex = 0;
 }
 
 function initActions() {
@@ -68,40 +85,18 @@ function initActions() {
   );
 }
 
-function createPagesArray() {
-  state.pagesArray = [];
-  for (let i = 0; i < Math.ceil(state.list.length / state.charsPerPage); i++) {
-    createPage();
-  }
-
-  console.log("pages array: ", state.pagesArray);
-}
-
-function createPage() {
-  const page = [];
-  for (let i = state.startIndex; i < state.endIndex; i++) {
-    if (state.list[i]) {
-      page.push(state.list[i]);
-    }
-  }
-  state.pagesArray.push(page);
-  state.startIndex = state.endIndex;
-  state.endIndex = state.startIndex + state.charsPerPage;
-}
-
 async function fetchAllChars(page = 1) {
   if (page == 1) ulLoader(true);
   try {
     const data = await api.fetchPeople(page);
     state.list = [...state.list, ...data.results];
     if (page == 1) {
-      state.totalChars = data.count;
+      state.charsCount = data.count;
     }
     if (data.next) {
       page++;
       fetchAllChars(page);
     } else {
-      createPagesArray();
       renderCharactersList();
       renderTotalPageNumbers();
       ulLoader(false);
@@ -200,14 +195,17 @@ async function loopAndFetch(urls, stateObject, apiFetch) {
  *
  */
 //#region
+
 function nextPage() {
-  state.pagesArrayIndex++;
+  state.page++;
   renderCharactersList();
 }
+
 function previousPage() {
-  state.pagesArrayIndex--;
+  state.page--;
   renderCharactersList();
 }
+
 function nextArticle() {
   if (state.currentArticle == state.articlesArray.length) {
     state.currentArticle = 1;
@@ -216,6 +214,7 @@ function nextArticle() {
   }
   renderMultiArticles(state.articlesArray, state.articleType);
 }
+
 function previousArticle() {
   if (state.currentArticle == 1) {
     state.currentArticle = state.articlesArray.length;
@@ -224,19 +223,24 @@ function previousArticle() {
   }
   renderMultiArticles(state.articlesArray, state.articleType);
 }
+
 function changeCharsPerPage(e) {
   state.charsPerPage = Number(e.target.value);
-  state.startIndex = 0;
-  state.endIndex = state.charsPerPage;
-  createPagesArray();
-  renderCharactersList();
   renderTotalPageNumbers();
+  if (state.page > state.totalPages) {
+    state.page = state.totalPages;
+  }
+  renderCharactersList();
 }
-function initListItemsEventListeners() {
-  document
-    .querySelectorAll("li")
-    .forEach((item) => item.addEventListener("click", renderCharacterDetails));
+
+function initListItemAction(nodeElement, char) {
+  nodeElement.addEventListener("click", (e) => {
+    removeListItemArrow();
+    nodeElement.classList.add("active");
+    renderCharacterDetails(char);
+  });
 }
+
 function initMultiArticleActions() {
   document
     .querySelector(".multi-back-btn")
@@ -255,48 +259,30 @@ function initMultiArticleActions() {
 //#region
 
 function renderCharactersList() {
-  const page = state.pagesArray[state.pagesArrayIndex];
-  let listItems = "";
-  if (page) {
-    for (let el of page) {
-      listItems += `<li>${el.name}</li>`;
-    }
+  const ul = document.querySelector(".characters > ul");
+  ul.innerHTML = "";
+  let endIndex = state.page * state.charsPerPage;
+  let startIndex = endIndex - state.charsPerPage;
+  if (endIndex > state.list.length) {
+    endIndex = state.list.length;
   }
-  document.querySelector(".characters > ul").innerHTML = listItems;
-  initListItemsEventListeners();
+  console.log(startIndex, endIndex);
+  for (let i = startIndex; i < endIndex; i++) {
+    const char = state.list[i];
+    const li = document.createElement("li");
+    li.innerText = char.name;
+    ul.appendChild(li);
+    initListItemAction(li, char);
+  }
   renderPageNumber();
 }
 
-function renderCharacterDetails(e) {
+function renderCharacterDetails(char) {
   document.querySelector("aside").classList.remove("hidden");
-  removeListItemArrow();
-  e.target.classList.add("active");
   characterInfoLoader(true);
-  const character = state.list.find((el) => el.name == e.target.innerText);
-  state.selectedCharacter = character;
-
-  const {
-    name,
-    height,
-    mass,
-    hair_color,
-    skin_color,
-    eye_color,
-    birth_year,
-    gender,
-  } = character;
-  const characterDetails = `
-     <article>
-            <h5>${name}</h5>
-            <p>Height: ${height}cm</p>
-            <p>Mass: ${mass} kg</p>
-            <p>Hair color: ${hair_color}</p>
-            <p>Skin color: ${skin_color}</p>
-            <p>Eye color: ${eye_color}</p>
-            <p>Birth year:${birth_year}</p>
-            <p>Gender: ${gender}</p>
-          </article>
-    `;
+  // const character = state.list.find((el) => el.name == e.target.innerText);
+  state.selectedCharacter = char;
+  const characterDetails = characterTemplate(char);
   characterInfoLoader(false);
   document.querySelector(".character-details").innerHTML = characterDetails;
   document.querySelector(".btns > input[data-type='planet']").checked = true;
@@ -340,30 +326,18 @@ function renderPlanet(data) {
 }
 
 function renderPageNumber() {
-  document.querySelector(".characters  span").innerText =
-    state.pagesArrayIndex + 1;
-  // const firstLi = document.querySelector("li").innerText;
-  // const indexOfLi = state.list.findIndex((el) => el.name == firstLi);
-  // Disabel back/forward buttons when there are no more pages to show
+  document.querySelector(".characters  span").innerText = state.page;
   const backBtn = document.querySelector(".back-btn");
   const forwardBtn = document.querySelector(".forward-btn");
 
-  backBtn.disabled = state.pagesArrayIndex == 0;
-  forwardBtn.disabled =
-    state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage);
-
-  // state.pagesArrayIndex == 0
-  //   ? (backBtn.disabled = true)
-  //   : (backBtn.disabled = false);
-  // state.pagesArrayIndex == Math.floor(state.totalChars / state.charsPerPage)
-  //   ? (forwardBtn.disabled = true)
-  //   : (forwardBtn.disabled = false);
+  backBtn.disabled = state.page == 1;
+  forwardBtn.disabled = state.page == state.totalPages;
 }
 
 function renderTotalPageNumbers() {
-  document.querySelector(".totalpages").innerHTML = Math.ceil(
-    state.totalChars / state.charsPerPage
-  );
+  const totalPages = Math.ceil(state.charsCount / state.charsPerPage);
+  state.totalPages = totalPages;
+  document.querySelector(".totalpages").innerHTML = totalPages;
 }
 
 function renderInfoMissing(type) {
@@ -382,12 +356,14 @@ function characterInfoLoader(loading) {
     ? spinner.classList.remove("hidden")
     : spinner.classList.add("hidden");
 }
+
 function extraInfoLoader(loading) {
   const spinner = document.querySelector(".extraInfo");
   loading
     ? spinner.classList.remove("hidden")
     : spinner.classList.add("hidden");
 }
+
 function ulLoader(loading) {
   const spinner = document.querySelector(".ul-loader");
   if (loading) {
@@ -409,21 +385,5 @@ function removeListItemArrow() {
     .querySelectorAll("li")
     .forEach((li) => li.classList.remove("active"));
 }
-
-//#endregion
-
-/**
- *
- * Entry Point
- *
- */
-//#region
-function main() {
-  initState();
-  fetchAllChars();
-  initActions();
-}
-
-main();
 
 //#endregion

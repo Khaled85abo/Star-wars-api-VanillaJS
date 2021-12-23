@@ -95,6 +95,7 @@ header > p {
 }
 
 .characters .page-controller {
+  user-select: none;
   display: flex;
   justify-content: center;
 }

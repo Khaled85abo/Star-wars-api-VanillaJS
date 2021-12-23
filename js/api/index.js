@@ -5,29 +5,37 @@ export const fetchPeople = async (page) => {
   const data = await getData.json();
   return data;
 };
+
 export const fetchPlanet = async (planet) => {
   const getData = await fetch(`${baseUrl}planets/${planet}`);
   const data = await getData.json();
   return data;
 };
+
 export const fetchVehicles = async (vehicle) => {
   const getData = await fetch(`${baseUrl}vehicles/${vehicle}`);
   const data = await getData.json();
   return data;
 };
+
 export const fetchSpecies = async (specie) => {
   const getData = await fetch(`${baseUrl}species/${specie}`);
   const data = await getData.json();
   return data;
 };
+
 export const fetchStarships = async (starship) => {
   const getData = await fetch(`${baseUrl}starships/${starship}`);
   const data = await getData.json();
   return data;
 };
 
+/**
+ *
+ * Abandened because of bad readablity
+ */
 export const allFetch = async (extension, num) => {
-  const getData = await fetch(`${baseUrl}${extension}/${num}`);
+  const getData = await fetch(`https://swapi.dev/api/${extension}/${num}`);
   const data = await getData.json();
   return data;
 };
