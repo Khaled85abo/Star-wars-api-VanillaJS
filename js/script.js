@@ -295,12 +295,18 @@ function renderMultiArticles(arr, type) {
   if (state.currentArticle > state.articlesArray.length) {
     state.currentArticle = 1;
   }
-  const extraInfo =
-    type === CONSTANTS.VEHICLES
-      ? vehicleTemplate(arr[state.currentArticle - 1])
-      : type === CONSTANTS.SPECIES
-      ? specieTemplate(arr[state.currentArticle - 1])
-      : starshipsTemplate(arr[state.currentArticle - 1]);
+  let extraInfo;
+  switch (type) {
+    case CONSTANTS.VEHICLES:
+      extraInfo = vehicleTemplate(arr[state.currentArticle - 1]);
+      break;
+    case CONSTANTS.SPECIES:
+      extraInfo = specieTemplate(arr[state.currentArticle - 1]);
+      break;
+    case CONSTANTS.STARSHIPS:
+      extraInfo = starshipsTemplate(arr[state.currentArticle - 1]);
+      break;
+  }
   extraInfoLoader(false);
   document.querySelector(".article").innerHTML = `
   ${extraInfo}
@@ -320,6 +326,7 @@ function renderMultiArticles(arr, type) {
   `;
   arr.length > 1 && initMultiArticleActions();
 }
+
 function renderPlanet(data) {
   extraInfoLoader(false);
   document.querySelector(".article").innerHTML = planetTemplate(data);
