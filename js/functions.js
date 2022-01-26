@@ -1,7 +1,5 @@
 export const getNumber = (url) => {
   const splitted = url.split("/");
-  const spacehipNum = splitted.filter(
-    (le) => le !== "" && Number.isInteger(+le)
-  );
-  return spacehipNum[0];
+  const num = splitted.filter((le) => le !== "" && Number.isInteger(+le));
+  return num[0];
 };

@@ -97,11 +97,12 @@ const starshipsTemplate = (data) => {
     starship_class,
     name,
   } = data;
+
   const info = `
     <article>
               <h5>${name}</h5>
-              <p>Starship class: ${starship_class}h</p>
-              <p>Langth: ${length}days</p>
+              <p>Starship class: ${starship_class}</p>
+              <p>Langth: ${length}</p>
               <p>Manufacturer: ${manufacturer}</p>
               <p>Model: ${model}km</p>
               <p>Passengers: ${passengers}</p>
